@@ -63,8 +63,14 @@
 (define inOrder
   (lambda (visitFunct)
     (lambda (tree)
-      (inOrder (leftTree tree))
-      (visitFunct (root tree))
-      
+      (budTrees (visitFunct (rootTree tree)) ((inOrder (visitFunct)) (leftTree tree)) ((inOrder (visitFunct)) (rightTree tree))))))
 
+(define replaceTreeValue
+  (lambda (value old new)
+    (cond
+      ((eq? value old) new)
+      (else value))))
+
+(define binaryModification
+  (inOrder (replaceTreeValue)))
 
