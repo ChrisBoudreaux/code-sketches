@@ -61,16 +61,17 @@
     (cons root (cons (cons leftTree '()) (cons rightTree '() )))))
 
 (define inOrder
-  (lambda (visitFunct)
+  (lambda (visit)
     (lambda (tree)
-      (budTrees (visitFunct (rootTree tree)) ((inOrder (visitFunct)) (leftTree tree)) ((inOrder (visitFunct)) (rightTree tree))))))
-
-(define replaceTreeValue
-  (lambda (value old new)
-    (cond
-      ((eq? value old) new)
-      (else value))))
-
-(define binaryModification
-  (inOrder (replaceTreeValue)))
+      (cond
+        ((and (null? (leftTree tree)) (null? (rightTree tree))) (visit (rootTree tree)))
+        ((null? (leftTree tree)) (cons (visit (rootTree tree)) ((inOrder visit) (rightTree tree))))
+        ((null? (rightTree tree)) (cons ((inOrder visit) (leftTree tree)) (visit (rootTree tree))))
+        (else (cons ((inOrder visit) (leftTree tree)) (cons (visit (rootTree tree)) ((inOrder visit) (rightTree tree))))))))) 
+      
+(define print
+  (lambda (a)
+    a))
+      
+      
 
