@@ -1,5 +1,7 @@
 #
 # .bak for compiled racket files
-.bak
+*.bak
 #pycache for python
 __pycache__/
+#swp files
+*.swp

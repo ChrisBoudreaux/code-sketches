@@ -71,14 +71,24 @@ class Gene:
     def constructList(self):
         return constructListFromPairs(self.__listData)
         
+    def shuffle(self):
+        newOrder = []
+        while(self.__listData != []):
+            toPick = random.randint(0,len(self.__listData)-1)
+            newOrder.append(self.__listData[toPick])
+            self.__listData.remove(self.__listData[toPick])
+        self.__listData = newOrder
+
+        
+#def DarwinSort(list):
+    
+        
         
 def main():
     myGene = Gene([8,7,6,5,4,3,2,1])
-    otherGene = Gene([5,2,3,1,8,7,6,4])    
-    child1, child2 = myGene.crossover(otherGene)
+    otherGene = copy.deepcopy(myGene)
+    otherGene.shuffle()
     print(myGene.getListData())
     print(otherGene.getListData())
-    print(child1.getListData())
-    print(child2.getListData())
     
 main()
