@@ -94,41 +94,75 @@ class Gene:
             self.__listData.remove(self.__listData[toPick])
         self.__listData = newOrder
         
+    def mutate(self):
+        swap1 = random.randint(0,len(self.__listData)-1)
+        swap2 = random.randint(0,len(self.__listData)-1)
+        temp = self.__listData[swap1]
+        self.__listData[swap1] = self.__listData[swap2]
+        self.__listData[swap2] = temp
+        print("Mutation!")
+        
 def generateProgeny(population):
     newPop = []
     popSize = len(population)
     while( len(newPop) < popSize):
-        toChoose = random.randint(0, 1000)
+        toChoose = random.randint(0, 999)
         toChoose /= 1000
-        toChoose2 = random.randint(0, 1000)
-        toChoose2 /= 1000
         picked1 = None
         picked2 = None
+        print("toChoose=",toChoose)
         while(picked1 == picked2):
+            toChoose2 = random.randint(0, 999)
+            toChoose2 /= 1000
+            print("toChoose2=",toChoose2)
             for gene in population:
-                if(toChoose >= gene.getFitnessIntMin() && toChoose <= gene.getFitnessIntMax()):
+                if(picked1 == None and toChoose >= gene.getFitnessIntMin() and toChoose <= gene.getFitnessIntMax()):
                     picked1 = gene
-                if(toChoose2 >= gene.getFitnessIntMin() && toChoose2 <= gene.getFitnessIntMax()):
+                if(toChoose2 >= gene.getFitnessIntMin() and toChoose2 <= gene.getFitnessIntMax()):
                     picked2 = gene
-            
+        child1, child2 = picked1.crossover(picked2)
+        newPop.append(child1)
+        if(len(newPop) != popSize):
+            newPop.append(child2)
+    if(random.randint(0,1)):
+        newPop[random.randint(0,popSize-1)].mutate()
+    return newPop
+        
+def debugAlgorithm(population,maxFit,avgFit):
+    for gene in population:
+        print(gene.getListData(),gene.fitness,gene.getFitnessIntMin(),gene.getFitnessIntMax())
+    print("Avg Fitness=",avgFit)
+    print("Max Fitness=",maxFit)
 
 def DarwinSort(list):
     population = []
     popSize = len(list)
     OGene = Gene(list)
-    for i in range (popSize):
+    for i in range (popSize-1):
         newGene = copy.deepcopy(OGene)
         newGene.shuffle()
         population.append(newGene)
+    population.append(OGene)
+    
+    maxFitness = 0
+    totalFitness = 0
+    theBest = None
+    for gene in population:
+        geneFit = gene.sortedNess()
+        if(geneFit >= maxFitness):
+            maxFitness = geneFit
+            theBest = gene
+        totalFitness += geneFit
+    avgFit = totalFitness / popSize
         
     while(maxFitness != 1):
         maxFitness = 0
         totalFitness = 0
         theBest = None
         for gene in population:
-            geneFit = gene.sortedNess
+            geneFit = gene.sortedNess()
             if(geneFit >= maxFitness):
-                matFitness = geneFit
+                maxFitness = geneFit
                 theBest = gene
             totalFitness += geneFit
         avgFit = totalFitness / popSize
@@ -138,7 +172,13 @@ def DarwinSort(list):
         startAt = 0
         for gene in population:
             gene.setFitnessInterval(startAt,totalFitness)
-            startAt = gene.getFitnessIntMax
+            startAt = gene.getFitnessIntMax()
+        debugAlgorithm(population,maxFitness,avgFit)
+        population = generateProgeny(population)
+        print("Avg Fitness =", avgFit)
+        print("Max Fitness =", maxFitness)
+        
+    return theBest.constructList()
         
         
             
@@ -147,10 +187,6 @@ def DarwinSort(list):
         
         
 def main():
-    myGene = Gene([8,7,6,5,4,3,2,1])
-    otherGene = copy.deepcopy(myGene)
-    otherGene.shuffle()
-    print(myGene.getListData())
-    print(otherGene.getListData())
+    print(DarwinSort([24,3,4,32,0,2,2,2,1,0,-1,-33]))
     
 main()
