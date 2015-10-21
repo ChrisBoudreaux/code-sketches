@@ -28,6 +28,20 @@ class Gene:
                 listData.append((val,valCount))
                 
         self.__listData = listData
+        self.fitnessIntMin = 0
+        self.fitnessIntMax = 0
+        self.fitness = 0
+        
+    def getFitnessIntMin(self):
+        return self.fitnessIntMin
+        
+    def getFitnessIntMax(self):
+        return self.fitnessIntMax
+        
+    def setFitnessInterval(self, begin, totalFitness):
+        self.fitnessIntMin = begin
+        range = self.fitness / totalFitness
+        self.fitnessIntMax = begin + range
         
     def isSameList(self,other):
         for val in self.__listData:
@@ -42,7 +56,8 @@ class Gene:
             if(val[0] >= previous[0]):
                 sortedLength+=1
                 previous = val
-        return sortedLength / len(self.__listData)
+        self.fitness = sortedLength / len(self.__listData)
+        return self.fitness
         
     def crossover(self, other):
         splitAt = random.randint(1,len(self.__listData)-1)
@@ -78,9 +93,56 @@ class Gene:
             newOrder.append(self.__listData[toPick])
             self.__listData.remove(self.__listData[toPick])
         self.__listData = newOrder
-
         
-#def DarwinSort(list):
+def generateProgeny(population):
+    newPop = []
+    popSize = len(population)
+    while( len(newPop) < popSize):
+        toChoose = random.randint(0, 1000)
+        toChoose /= 1000
+        toChoose2 = random.randint(0, 1000)
+        toChoose2 /= 1000
+        picked1 = None
+        picked2 = None
+        while(picked1 == picked2):
+            for gene in population:
+                if(toChoose >= gene.getFitnessIntMin() && toChoose <= gene.getFitnessIntMax()):
+                    picked1 = gene
+                if(toChoose2 >= gene.getFitnessIntMin() && toChoose2 <= gene.getFitnessIntMax()):
+                    picked2 = gene
+            
+
+def DarwinSort(list):
+    population = []
+    popSize = len(list)
+    OGene = Gene(list)
+    for i in range (popSize):
+        newGene = copy.deepcopy(OGene)
+        newGene.shuffle()
+        population.append(newGene)
+        
+    while(maxFitness != 1):
+        maxFitness = 0
+        totalFitness = 0
+        theBest = None
+        for gene in population:
+            geneFit = gene.sortedNess
+            if(geneFit >= maxFitness):
+                matFitness = geneFit
+                theBest = gene
+            totalFitness += geneFit
+        avgFit = totalFitness / popSize
+        if(maxFitness == 1):
+            break
+        #The next few blocks handles generating children
+        startAt = 0
+        for gene in population:
+            gene.setFitnessInterval(startAt,totalFitness)
+            startAt = gene.getFitnessIntMax
+        
+        
+            
+    
     
         
         
